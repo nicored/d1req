@@ -61,6 +61,8 @@ file in $GOBIN:
 
 ### Xor
 
+#### First version
+
 Performance of Xor is quite poor. Converting and parsing data to different types
 and formats is very expensive, as well as string operations. 
 
@@ -68,26 +70,26 @@ I did not have much time to look much into alternatives, but I believe that
 more efficient ways to do this exist. I'd give it another go by operating with bytes only
 where possible, which I expect would slightly improve the performance.
 
-        Average   Total over 2.45s
-        90ms      2.45s (flat, cum) 99.19% of Total
+        BenchmarkHi-4   	 1000000	      2958 ns/op	     576 B/op	      39 allocs/op
+        90ms      2.25s (flat, cum) 91.46% of Total
          .          .     27:// num is the number used to perform xor comparisons with the input
          .          .     28:// The output of Xor is a string representing the result of the operation in Hexadecimal format
          .          .     29:// in UPPERCASE
          .          .     30:func Xor(input string, num int64) (string, error) {
          .          .     31:	// Convert num to binary format
-         .      250ms     32:	numBin := fmt.Sprintf("%032s", strconv.FormatInt(num, 2))
+         .      190ms     32:	numBin := fmt.Sprintf("%032s", strconv.FormatInt(num, 2))
          .          .     33:
          .          .     34:	startPos := len(numBin)
          .          .     35:	retVal := ""
-         .          .     36:	for _, char := range input {
-         .          .     37:		if startPos == 0 {
+      20ms       20ms     36:	for _, char := range input {
+      10ms       10ms     37:		if startPos == 0 {
          .          .     38:			startPos = len(numBin) - 8
          .          .     39:		} else {
          .          .     40:			startPos = startPos - 8
          .          .     41:		}
          .          .     42:
          .          .     43:		// Convert 1 byte at a time to int64 format
-      20ms      320ms     44:		comp, err := strconv.ParseInt(numBin[startPos:startPos+8], 2, 64)
+      30ms      340ms     44:		comp, err := strconv.ParseInt(numBin[startPos:startPos+8], 2, 64)
          .          .     45:		if err != nil {
          .          .     46:			return "", errors.Wrap(err, "Error converting byte to int.")
          .          .     47:		}
@@ -97,14 +99,51 @@ where possible, which I expect would slightly improve the performance.
          .          .     51:
          .          .     52:		// Convert xor result to hexadecimal formal
          .          .     53:		// and append '0' if xorHex <= F
-      20ms      570ms     54:		xorHex := strconv.FormatInt(xorInt, 16)
-      10ms       10ms     55:		if len(xorHex) == 1 {
-      10ms       70ms     56:			xorHex = "0" + xorHex
+         .      490ms     54:		xorHex := strconv.FormatInt(xorInt, 16)
+         .          .     55:		if len(xorHex) == 1 {
+      10ms       30ms     56:			xorHex = "0" + xorHex
          .          .     57:		}
          .          .     58:
          .          .     59:		// Append to the chain
-      20ms      820ms     60:		retVal += xorHex
+      20ms      900ms     60:		retVal += xorHex
          .          .     61:	}
          .          .     62:
-      10ms      410ms     63:	return strings.ToUpper(retVal), nil
+         .      270ms     63:	return strings.ToUpper(retVal), nil
          .          .     64:}
+         
+
+#### Improved version
+
+I slightly improved the performance for the function by converting the num to a bytes array,
+which then only requires a simple cast to convert each byte to an integer.
+
+         BenchmarkHi-4   	 1000000	      1974 ns/op	     512 B/op	      36 allocs/op
+         40ms      1.52s (flat, cum) 93.25% of Total
+          .          .     33:	numBytes := make([]byte, 4)
+          .          .     34:	binary.BigEndian.PutUint32(numBytes, uint32(num))
+          .          .     35:
+          .          .     36:	byteAt := len(numBytes)
+          .          .     37:	retVal := ""
+       10ms       10ms     38:	for _, char := range input {
+          .          .     39:		if byteAt == 0 {
+          .          .     40:			byteAt = len(numBytes) - 1
+          .          .     41:		} else {
+          .          .     42:			byteAt -= 1
+          .          .     43:		}
+          .          .     44:		numByte := numBytes[byteAt]
+          .          .     45:
+          .          .     46:		// Xor operation on char code and current byte in num
+          .          .     47:		xorInt := int64(char) ^ int64(numByte)
+          .          .     48:
+          .          .     49:		// Convert xor result to hexadecimal formal
+          .          .     50:		// and append '0' if xorHex <= F
+       10ms      490ms     51:		xorHex := strconv.FormatInt(xorInt, 16)
+          .          .     52:		if len(xorHex) == 1 {
+          .       40ms     53:			retVal += "0" + xorHex
+          .          .     54:		} else {
+       20ms      730ms     55:			retVal += xorHex
+          .          .     56:		}
+          .          .     57:	}
+          .          .     58:
+          .      250ms     59:	return strings.ToUpper(retVal), nil
+          .          .     60:}

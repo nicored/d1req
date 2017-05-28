@@ -48,3 +48,11 @@ func TestXor(t *testing.T) {
 		assert.Equal(t, testCase.Expected, actual)
 	}
 }
+
+func BenchmarkHi(b *testing.B) {
+	b.ReportAllocs()
+
+	for i := 0; i < b.N; i++ {
+		Xor("T$(LCy gbhn3wb798", 89)
+	}
+}

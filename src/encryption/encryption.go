@@ -2,11 +2,13 @@ package encryption
 
 import (
 	"crypto"
+	"encoding/binary"
 	"fmt"
-	"github.com/pkg/errors"
 	"io"
 	"strconv"
 	"strings"
+
+	"github.com/pkg/errors"
 )
 
 // Sha1Hex encrypt the input using SHA-1 encryption method, and
@@ -28,36 +30,30 @@ func Sha1Hex(input string) (string, error) {
 // The output of Xor is a string representing the result of the operation in Hexadecimal format
 // in UPPERCASE
 func Xor(input string, num int64) (string, error) {
-	// Convert num to binary format
-	numBin := fmt.Sprintf("%032s", strconv.FormatInt(num, 2))
+	numBytes := make([]byte, 4)
+	binary.BigEndian.PutUint32(numBytes, uint32(num))
 
-	startPos := len(numBin)
+	byteAt := len(numBytes)
 	retVal := ""
 	for _, char := range input {
-		if startPos == 0 {
-			startPos = len(numBin) - 8
+		if byteAt == 0 {
+			byteAt = len(numBytes) - 1
 		} else {
-			startPos = startPos - 8
+			byteAt -= 1
 		}
-
-		// Convert 1 byte at a time to int64 format
-		comp, err := strconv.ParseInt(numBin[startPos:startPos+8], 2, 64)
-		if err != nil {
-			return "", errors.Wrap(err, "Error converting byte to int.")
-		}
+		numByte := numBytes[byteAt]
 
 		// Xor operation on char code and current byte in num
-		xorInt := int64(char) ^ comp
+		xorInt := int64(char) ^ int64(numByte)
 
 		// Convert xor result to hexadecimal formal
 		// and append '0' if xorHex <= F
 		xorHex := strconv.FormatInt(xorInt, 16)
 		if len(xorHex) == 1 {
-			xorHex = "0" + xorHex
+			retVal += "0" + xorHex
+		} else {
+			retVal += xorHex
 		}
-
-		// Append to the chain
-		retVal += xorHex
 	}
 
 	return strings.ToUpper(retVal), nil
