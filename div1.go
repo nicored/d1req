@@ -105,7 +105,7 @@ func passwordHandler(c *cli.Context) (string, error) {
 		password = c.String("password")
 	}
 
-	// If username is empty, we get it from stdin
+	// If password is empty, we get it from stdin
 	if password == "" {
 		var bytePassword []byte
 
