@@ -32,5 +32,20 @@ file in $GOBIN:
     # The program will warn you that typing your pswd as a cmd line argument is bad
     # Also, don't you worry, passwords typed in standard input won't show up
     
-    d1req -u nico -p myAwesomePassword
+    $ d1req -u nico -p myAwesomePassword
+    WARNING: It is not safe, and therefore not recommended to enter the password in command line arguments. Use stdin instead.
+    Hi nico, you are successfully authenticated
+    
+    $ d1req -u nico
+    Password: 
+    Hi nico, you are successfully authenticated
+    
+    $ d1req
+    Username: nico
+    Password: 
+    Hi nico, you are successfully authenticated
+    
+    $ d1req -u wrongusername
+    Password:
+    Authentication failed.: Invalid credentials.
 ```
