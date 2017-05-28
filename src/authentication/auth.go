@@ -10,18 +10,37 @@ import (
 	"github.com/pkg/errors"
 )
 
+const (
+	FailMsg = "FAIL"
+)
+
 type Auth struct {
 	SSL     bool
 	BaseUrl string
+	Path    string
 }
 
 func (auth Auth) Authenticate(username, pswd string) error {
-	_, err := GenSessionID()
+	sessionID, err := GenSessionID()
 	if err != nil {
 		return errors.Wrap(err, "Error generating session ID")
 	}
 
+	_, err = auth.initSession(sessionID)
+	if err != nil {
+		return errors.Wrap(err, "Could not initialise the session")
+	}
+
 	return nil
+}
+
+func (auth Auth) getHttp() string {
+	httpStr := "http"
+	if auth.SSL == true {
+		return httpStr + "s:"
+	}
+
+	return httpStr + ":"
 }
 
 // GenSessionID generates a session ID in Hexadecimal format

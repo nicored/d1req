@@ -1,7 +1,21 @@
 package main
 
-import "fmt"
+import (
+	"authentication"
+)
 
 func main() {
-	fmt.Println("Division 1 Technical Challenge")
+	auth := authentication.Auth{
+		BaseUrl: "test.div1.io",
+		SSL:     true,
+		Path:    "/test/1/exec",
+	}
+
+	username := "ClubSandwich"
+	password := "T$(LCy gbhn3wb798"
+
+	err := auth.Authenticate(username, password)
+	if err != nil {
+		panic(err)
+	}
 }
