@@ -21,7 +21,8 @@ func TestSha1Hex(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
-		actual := Sha1Hex(testCase.Input)
+		actual, err := Sha1Hex(testCase.Input)
+		assert.NoError(t, err)
 		assert.Equal(t, testCase.Expected, actual)
 	}
 }
@@ -31,7 +32,7 @@ func TestXor(t *testing.T) {
 	// of this program
 	testCases := []struct {
 		Input    string
-		Num      int
+		Num      int64
 		Expected string
 	}{
 		{"ClubSandwich", 89, "1A6C75620A616E642E696368"},
@@ -42,7 +43,8 @@ func TestXor(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
-		actual := Xor(testCase.Input, testCase.Num)
+		actual, err := Xor(testCase.Input, testCase.Num)
+		assert.NoError(t, err)
 		assert.Equal(t, testCase.Expected, actual)
 	}
 }

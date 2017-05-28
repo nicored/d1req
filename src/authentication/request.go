@@ -8,6 +8,8 @@ import (
 	"github.com/pkg/errors"
 )
 
+// SendRequest sends a GET request to the server and returns the
+// response body in []byte
 func (auth Auth) SendRequest(urlCnf url.URL) ([]byte, error) {
 	urlStr := auth.getHttp() + urlCnf.String()
 

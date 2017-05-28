@@ -36,3 +36,15 @@ func (auth Auth) initSession(sessionID string) (int64, error) {
 
 	return int64(respNum), nil
 }
+
+// genInitSessionQuery generates the query part of the URL (everything after ?)
+// The query includes a type, subtype and the sessionID
+func genInitSessionQuery(sessionID string) string {
+	queryParams := url.Values{}
+
+	queryParams.Add("Type", TypeSession)
+	queryParams.Add("SubType", SubTypeInitSession)
+	queryParams.Add("SessionID", sessionID)
+
+	return "Command&" + queryParams.Encode()
+}

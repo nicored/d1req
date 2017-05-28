@@ -14,7 +14,7 @@ func main() {
 	username := "ClubSandwich"
 	password := "T$(LCy gbhn3wb798"
 
-	err := auth.Authenticate(username, password)
+	_, err := auth.Authenticate(username, password)
 	if err != nil {
 		panic(err)
 	}

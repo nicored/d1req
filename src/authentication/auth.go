@@ -11,8 +11,18 @@ import (
 )
 
 const (
-	FailMsg = "FAIL"
+	TypeSession          = "Session"
+	SubTypeInitSession   = "InitSession"
+	SubTypeCheckPassword = "CheckPassword"
+
+	FailMsg    = "FAIL"
+	SuccessMsg = "WINFAIL"
 )
+
+type Session struct {
+	SessionID string
+	EncNum    int64
+}
 
 type Auth struct {
 	SSL     bool
@@ -20,20 +30,43 @@ type Auth struct {
 	Path    string
 }
 
-func (auth Auth) Authenticate(username, pswd string) error {
-	sessionID, err := GenSessionID()
+func (auth Auth) Authenticate(username, pswd string) (*Session, error) {
+	session, err := auth.NewSession()
 	if err != nil {
-		return errors.Wrap(err, "Error generating session ID")
+		return nil, errors.Wrap(err, "Error creating the new session.")
 	}
 
-	_, err = auth.initSession(sessionID)
+	// Check user credentials
+	err = auth.checkCredentials(username, pswd, session)
 	if err != nil {
-		return errors.Wrap(err, "Could not initialise the session")
+		return nil, errors.Wrap(err, "Authentication failed.")
 	}
 
-	return nil
+	return session, nil
 }
 
+func (auth Auth) NewSession() (*Session, error) {
+	// Generate the new session ID
+	sessionID, err := GenSessionID()
+	if err != nil {
+		return nil, errors.Wrap(err, "Error generating session ID.")
+	}
+
+	// Initialise the session and retrieve the encryption number from server
+	sessionNum, err := auth.initSession(sessionID)
+	if err != nil {
+		return nil, errors.Wrap(err, "Could not initialise the session.")
+	}
+
+	return &Session{
+		SessionID: sessionID,
+		EncNum:    sessionNum,
+	}, nil
+}
+
+// getHttp returns the http protocol for url generation
+// http if auth.SSL is false, https if true
+// Example output "http:" or "https:"
 func (auth Auth) getHttp() string {
 	httpStr := "http"
 	if auth.SSL == true {
