@@ -1,11 +1,14 @@
 package encryption
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestSha1Hex(t *testing.T) {
+	// Expected values are based on the output from the javascript version
+	// of this program
 	testCases := []struct {
 		Input    string
 		Expected string
@@ -19,6 +22,27 @@ func TestSha1Hex(t *testing.T) {
 
 	for _, testCase := range testCases {
 		actual := Sha1Hex(testCase.Input)
+		assert.Equal(t, testCase.Expected, actual)
+	}
+}
+
+func TestXor(t *testing.T) {
+	// Expected values are based on the output from the javascript version
+	// of this program
+	testCases := []struct {
+		Input    string
+		Num      int
+		Expected string
+	}{
+		{"ClubSandwich", 89, "1A6C75620A616E642E696368"},
+		{"T$(LCy gbhn3wb798", 74, "1E24284C0979206728686E333D62373972"},
+		{"Elastica", 10, "4F6C61737E696361"},
+		{"Elisa123_123_8383:", 11, "4E6C69736A3132335431323354383338383A"},
+		{"Kang0_!###!@123", 12, "47616E673C5F21232F2321403D3233"},
+	}
+
+	for _, testCase := range testCases {
+		actual := Xor(testCase.Input, testCase.Num)
 		assert.Equal(t, testCase.Expected, actual)
 	}
 }
