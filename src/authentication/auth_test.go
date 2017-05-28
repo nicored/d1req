@@ -37,7 +37,7 @@ func TestGetHttp(t *testing.T) {
 	prot := auths.getHttp()
 	assert.Equal(t, "https:", prot)
 
-	auth.SSL = false
+	auths.SSL = false
 	prot = auths.getHttp()
 	assert.Equal(t, "http:", prot)
 }

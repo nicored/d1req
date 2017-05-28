@@ -1,10 +1,54 @@
 package authentication
 
 import (
+	"net/url"
+	"reflect"
 	"testing"
 
+	"github.com/bouk/monkey"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestCheckCredentialsSuccess(t *testing.T) {
+	session := &Session{
+		SessionID: sessionID,
+		EncNum:    89,
+	}
+	monkey.PatchInstanceMethod(reflect.TypeOf(auth), "SendRequest", func(_ Auth, _ url.URL) ([]byte, error) {
+		return []byte("WINFAIL"), nil
+	})
+
+	err := auth.checkCredentials("nico", "myPassword", session)
+	assert.NoError(t, err)
+}
+
+func TestCheckCredentialsInvalidCredentials(t *testing.T) {
+	session := &Session{
+		SessionID: sessionID,
+		EncNum:    89,
+	}
+	monkey.PatchInstanceMethod(reflect.TypeOf(auth), "SendRequest", func(_ Auth, _ url.URL) ([]byte, error) {
+		return []byte("FAIL"), nil
+	})
+
+	err := auth.checkCredentials("nico", "myPassword", session)
+	assert.Error(t, err)
+	assert.Equal(t, "Invalid credentials.", err.Error())
+}
+
+func TestCheckCredentialsTimedOut(t *testing.T) {
+	session := &Session{
+		SessionID: sessionID,
+		EncNum:    89,
+	}
+	monkey.PatchInstanceMethod(reflect.TypeOf(auth), "SendRequest", func(_ Auth, _ url.URL) ([]byte, error) {
+		return []byte(""), nil
+	})
+
+	err := auth.checkCredentials("nico", "myPassword", session)
+	assert.Error(t, err)
+	assert.Equal(t, "Authentication request timed out.", err.Error())
+}
 
 func TestEncryptUsername(t *testing.T) {
 	// Expected values are based on the output from the javascript version
