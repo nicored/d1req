@@ -19,11 +19,16 @@ const (
 	SuccessMsg = "WINFAIL"
 )
 
+// Session is a struct that holds the session ID
+// as well as the number used for encryption
 type Session struct {
 	SessionID string
 	EncNum    int64
 }
 
+// Auth is a struct that holds information about
+// the connection. It also provide a set of functions that
+// are used for authentication, and session management
 type Auth struct {
 	SSL     bool
 	BaseUrl string
