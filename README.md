@@ -147,3 +147,28 @@ which then only requires a simple cast to convert each byte to an integer.
           .          .     58:
           .      250ms     59:	return strings.ToUpper(retVal), nil
           .          .     60:}
+
+#### Improved the improved version
+
+3.05AM: I was in bed and could not sleep because I was reflecting on my code, and I felt like this function was too bad to be true.
+So I got up, took my laptop, and commented out all the lines that made me feel really bad. Changed things here and there, ran my tests
+and it just worked.
+
+Note to self: 
+Next time, do not literally translate code from js to a superior language like go because it's going to be wrong and you won't be able to sleep.
+
+
+        BenchmarkHi-4   	 2000000	       598 ns/op	     224 B/op	       5 allocs/op
+         50ms      1.73s (flat, cum) 98.30% of Total
+         .          .     32:func Xor(input string, num int64) (string, error) {
+         .          .     33:	numBytes := make([]byte, 4)
+         .          .     34:	binary.LittleEndian.PutUint32(numBytes, uint32(num))
+         .          .     35:
+      30ms      1.38s     36:	output := make([]byte, len(input))
+         .          .     37:
+         .          .     38:	for i, _ := range input {
+      20ms       20ms     39:		output[i] = input[i] ^ numBytes[i%len(numBytes)]
+         .          .     40:	}
+         .          .     41:
+         .      330ms     42:	return strings.ToUpper(hex.EncodeToString(output)), nil
+         .          .     43:}

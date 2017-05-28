@@ -13,6 +13,11 @@ import (
 	"golang.org/x/crypto/ssh/terminal"
 )
 
+const (
+	BaseUrl = "test.div1.io"
+	Path    = "/test/1/exec"
+)
+
 func main() {
 	app := cli.NewApp()
 
@@ -45,9 +50,9 @@ func main() {
 		}
 
 		auth := authentication.Auth{
-			BaseUrl: "test.div1.io",
+			BaseUrl: BaseUrl,
 			SSL:     true,
-			Path:    "/test/1/exec",
+			Path:    Path,
 		}
 
 		_, err = auth.Authenticate(username, password)

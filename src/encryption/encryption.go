@@ -3,9 +3,9 @@ package encryption
 import (
 	"crypto"
 	"encoding/binary"
+	"encoding/hex"
 	"fmt"
 	"io"
-	"strconv"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -31,30 +31,13 @@ func Sha1Hex(input string) (string, error) {
 // in UPPERCASE
 func Xor(input string, num int64) (string, error) {
 	numBytes := make([]byte, 4)
-	binary.BigEndian.PutUint32(numBytes, uint32(num))
+	binary.LittleEndian.PutUint32(numBytes, uint32(num))
 
-	byteAt := len(numBytes)
-	retVal := ""
-	for _, char := range input {
-		if byteAt == 0 {
-			byteAt = len(numBytes) - 1
-		} else {
-			byteAt -= 1
-		}
-		numByte := numBytes[byteAt]
+	output := make([]byte, len(input))
 
-		// Xor operation on char code and current byte in num
-		xorInt := int64(char) ^ int64(numByte)
-
-		// Convert xor result to hexadecimal formal
-		// and append '0' if xorHex <= F
-		xorHex := strconv.FormatInt(xorInt, 16)
-		if len(xorHex) == 1 {
-			retVal += "0" + xorHex
-		} else {
-			retVal += xorHex
-		}
+	for i, _ := range input {
+		output[i] = input[i] ^ numBytes[i%len(numBytes)]
 	}
 
-	return strings.ToUpper(retVal), nil
+	return strings.ToUpper(hex.EncodeToString(output)), nil
 }
