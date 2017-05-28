@@ -2,7 +2,10 @@
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/nicored/d1req)](https://goreportcard.com/report/github.com/nicored/d1req) [![Build Status](https://travis-ci.org/nicored/d1req.svg)](https://travis-ci.org/nicored/d1req) [![Coverage Status](https://coveralls.io/repos/github/nicored/d1req/badge.svg?branch=master)](https://coveralls.io/github/nicored/d1req?branch=master)
 
-##### GoDocs: Authentication: [![GoDoc](https://godoc.org/github.com/nicored/d1req/src/authentication?status.svg)](https://godoc.org/github.com/nicored/d1req/src/authentication) Encryption: [![GoDoc](https://godoc.org/github.com/nicored/d1req/src/encryption?status.svg)](https://godoc.org/github.com/nicored/d1req/src/encryption)
+##### GoDocs: 
+Authentication: [![GoDoc](https://godoc.org/github.com/nicored/d1req/src/authentication?status.svg)](https://godoc.org/github.com/nicored/d1req/src/authentication) 
+
+Encryption: [![GoDoc](https://godoc.org/github.com/nicored/d1req/src/encryption?status.svg)](https://godoc.org/github.com/nicored/d1req/src/encryption)
 
 ## Overview
 
