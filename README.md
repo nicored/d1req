@@ -61,7 +61,7 @@ file in $GOBIN:
 
 ### Xor
 
-Performance of Xor is not quite poor. Converting and parsing data to different types
+Performance of Xor is quite poor. Converting and parsing data to different types
 and formats is very expensive, as well as string operations. 
 
 I did not have much time to look much into alternatives, but I believe that
