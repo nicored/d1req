@@ -6,10 +6,12 @@ go:
   - 1.8
 
 install:
-  - go get
   - go get golang.org/x/tools/cmd/cover
   - go get github.com/mattn/goveralls
+  - go get github.com/modocache/gover
+  - export GOPATH=$GOPATH:`pwd`
 
 script:
-  - go test ./... -v -covermode=count -coverprofile=coverage.out
-  - $HOME/gopath/bin/goveralls -service=travis-ci -repotoken $COVERALLS_TOKEN
+  - go list -f '{{if len .TestGoFiles}}"go test -coverprofile={{.Dir}}/.coverprofile {{.ImportPath}}"{{end}}' ./src/authentication ./src/encryption | xargs -L 1 sh -c
+  - $HOME/gopath/bin/gover
+  - $HOME/gopath/bin/goveralls -coverprofile=gover.coverprofile -service=travis-ci -repotoken $COVERALLS_TOKEN
